@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<data>
+    <xpath expr="/form/notebook" position="inside">
+        <page string="Information" id="csv">
+            <field name="message" widget="binary" filename="filename"/>
+            <field name="message" colspan="6"/>
+            <newline/>
+            <button name="generate_fees" string="Generate Fees" colspan="4"/>
+        </page>
+    </xpath>
+</data>

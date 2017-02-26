@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<tryton>
+    <data>
+
+<!-- Configuration administration group -->
+
+<!-- Inherit Form View -->
+        <record model="ir.ui.view" id="condopaymentgroup_view_form">
+            <field name="model">condo.payment.group</field>
+            <field name="inherit" ref="condominium_payment_sepa.condopaymentgroup_view_form"/>
+            <field name="name">condopaymentgroup_form</field>
+        </record>
+
+<!-- List View -->
+
+<!-- Actions -->
+
+<!-- Menu -->
+
+<!-- Access permissions -->
+
+    </data>
+</tryton>

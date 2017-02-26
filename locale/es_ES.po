@@ -1,0 +1,31 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+
+msgctxt "field:condo.payment.group,message:"
+msgid "Message"
+msgstr "Mensaje"
+
+
+msgctxt "view:condo.payment.group:"
+msgid "Information"
+msgstr "Información"
+
+msgctxt "view:condo.payment.group:"
+msgid "Generate Fees"
+msgstr "Generar Recibos"
+
+
+msgctxt "model:ir.action,name:payment_description_list"
+msgid "PaymentGroup Concepts List"
+msgstr "Planilla de Conceptos"
+
+
+msgctxt "error:condo.payment.group:"
+msgid "Amount of fee for unit \"%s\" is invalid!"
+msgstr "Importe invalido en el recibo del inmueble \"%s\""
+
+msgctxt "error:condo.payment.group:"
+msgid "Amount of fee for unit \"%s\" must be bigger than zero!"
+msgstr "El importe del recibo del inmueble \"%s\" debe ser mayor que cero!"
