@@ -23,6 +23,7 @@ from sql import Desc, Asc
 
 from trytond.pool import Pool
 from trytond.report import Report
+from trytond.tools import cursor_dict
 from trytond.transaction import Transaction
 
 __all__ = ['PaymentDescriptionList']
@@ -36,7 +37,7 @@ class PaymentDescriptionList(Report):
         report_context = super(PaymentDescriptionList, cls).get_context(records, data)
 
         pool = Pool()
-        cursor = Transaction().cursor
+        cursor = Transaction().connection.cursor()
 
         Company = pool.get('company.company')
 
@@ -67,7 +68,7 @@ class PaymentDescriptionList(Report):
                                         order_by=(Asc(table2.name), Asc(table1.role))))
                 item = {
                     'company':   c['party.name'],
-                    'units':     cursor.dictfetchall()
+                    'units':     list(cursor_dict(cursor, size=None))
                     }
                 if len(item['units']):
                     report.append(item)

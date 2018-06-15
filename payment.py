@@ -19,8 +19,8 @@
 #
 ##############################################################################
 
-import unicodecsv
-from cStringIO import StringIO
+import csv
+from io import StringIO
 from decimal import Decimal, DecimalException
 
 from trytond.pool import PoolMeta, Pool
@@ -31,8 +31,7 @@ from trytond.pyson import Eval, Bool
 __all__ = ['CondoPaymentGroup']
 
 
-class CondoPaymentGroup:
-    __metaclass__ = PoolMeta
+class CondoPaymentGroup(metaclass=PoolMeta):
     __name__ = 'condo.payment.group'
 
     message = fields.Text('Message',
@@ -66,10 +65,10 @@ class CondoPaymentGroup:
                 ], order=[('unit.name', 'ASC'),])
 
             if group.message:
-                message = group.message.encode('utf-8')
-                f = StringIO(message)
-                r = unicodecsv.reader(f, delimiter=';', encoding='utf-8')
+                f = StringIO(group.message)
+                r = csv.reader(f, delimiter=';')
                 information = list(map(tuple, r))
+                f.close()
 
             #delete payments of this group with state='draft'
             CondoPayments.delete([p for p in group.payments if p.state=='draft'])
