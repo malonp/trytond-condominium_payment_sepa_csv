@@ -91,7 +91,7 @@ class CondoPaymentGroup(metaclass=PoolMeta):
                                       sepa_end_to_end_id = condoparty.unit.name)
                     #Read rest fields from message file
                     if group.message and len(information):
-                        concepts = [x for x in information if x[0]==condoparty.unit.name]
+                        concepts = [x for x in information if (len(x) and x[0]==condoparty.unit.name)]
                         for concept in concepts:
                             if ((len(concept)==4 and (condoparty.role==concept[3] if bool(concept[3]) else not bool(condoparty.role)))
                                 or (len(concept)==3 and len(concepts)==1)):
