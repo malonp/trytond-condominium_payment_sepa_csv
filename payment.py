@@ -46,7 +46,8 @@ class CondoPaymentGroup(metaclass=PoolMeta):
         t = cls.__table__()
         cls._buttons.update({
                 'generate_fees': {
-                    'invisible': Bool(Eval('readonly'))},
+                    'invisible': Bool(Eval('readonly')),
+                    'icon': 'tryton-launch',},
                 })
 
     @dualmethod
