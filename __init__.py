@@ -23,10 +23,7 @@ from trytond.pool import Pool
 from .payment import *
 from .report import *
 
+
 def register():
-    Pool.register(
-        CondoPaymentGroup,
-        module='condominium_payment_sepa_csv', type_='model')
-    Pool.register(
-        PaymentDescriptionList,
-        module='condominium_payment_sepa_csv', type_='report')
+    Pool.register(CondoPaymentGroup, module='condominium_payment_sepa_csv', type_='model')
+    Pool.register(PaymentDescriptionList, module='condominium_payment_sepa_csv', type_='report')
