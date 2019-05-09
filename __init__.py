@@ -25,5 +25,5 @@ from .report import *
 
 
 def register():
-    Pool.register(CondoPaymentGroup, module='condominium_payment_sepa_csv', type_='model')
+    Pool.register(Group, module='condominium_payment_sepa_csv', type_='model')
     Pool.register(PaymentDescriptionList, module='condominium_payment_sepa_csv', type_='report')

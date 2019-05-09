@@ -60,7 +60,7 @@ class PaymentDescriptionList(Report):
                     *table1.join(table2, condition=table1.unit == table2.id).select(
                         table2.name,
                         table1.role,
-                        where=((table1.sepa_mandate != None) & (table2.company == c['id'])),
+                        where=((table1.mandate != None) & (table2.company == c['id'])),
                         order_by=(Asc(table2.name), Asc(table1.role)),
                     )
                 )

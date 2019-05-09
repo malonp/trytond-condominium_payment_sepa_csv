@@ -28,17 +28,17 @@ from trytond.model import ModelView, fields, dualmethod
 from trytond.pyson import Eval, Bool
 
 
-__all__ = ['CondoPaymentGroup']
+__all__ = ['Group']
 
 
-class CondoPaymentGroup(metaclass=PoolMeta):
+class Group(metaclass=PoolMeta):
     __name__ = 'condo.payment.group'
 
     message = fields.Text('Message', states={'readonly': Bool(Eval('readonly'))}, depends=['readonly'])
 
     @classmethod
     def __setup__(cls):
-        super(CondoPaymentGroup, cls).__setup__()
+        super(Group, cls).__setup__()
         t = cls.__table__()
         cls._buttons.update({'generate_fees': {'invisible': Bool(Eval('readonly')), 'icon': 'tryton-launch'}})
 
@@ -54,9 +54,9 @@ class CondoPaymentGroup(metaclass=PoolMeta):
             condoparties = CondoParties.search(
                 [
                     ('unit.company', '=', group.company),
-                    ('sepa_mandate', '!=', None),
-                    ('sepa_mandate.state', 'not in', ['draft', 'canceled']),
-                    ('sepa_mandate.account_number', '!=', None),
+                    ('mandate', '!=', None),
+                    ('mandate.state', 'not in', ['draft', 'canceled']),
+                    ('mandate.account_number', '!=', None),
                 ],
                 order=[('unit.name', 'ASC')],
             )
@@ -81,11 +81,11 @@ class CondoPaymentGroup(metaclass=PoolMeta):
                         group=group,
                         unit=condoparty.unit,
                         # Set the condoparty as the party
-                        # (instead the debtor of the mandate condoparty.sepa_mandate.party)
+                        # (instead the debtor of the mandate condoparty.mandate.party)
                         party=condoparty.party,
                         currency=group.company.currency,
-                        sepa_mandate=condoparty.sepa_mandate,
-                        type=condoparty.sepa_mandate.type,
+                        mandate=condoparty.mandate,
+                        type=condoparty.mandate.type,
                         date=group.date,
                         sepa_end_to_end_id=condoparty.unit.name,
                     )
