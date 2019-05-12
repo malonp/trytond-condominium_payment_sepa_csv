@@ -28,26 +28,19 @@ from trytond.model import ModelView, fields, dualmethod
 from trytond.pyson import Eval, Bool
 
 
-__all__ = ['CondoPaymentGroup']
+__all__ = ['Group']
 
 
-class CondoPaymentGroup(metaclass=PoolMeta):
+class Group(metaclass=PoolMeta):
     __name__ = 'condo.payment.group'
 
-    message = fields.Text('Message',
-        states={
-            'readonly': Bool(Eval('readonly'))
-            },
-        depends=['readonly'])
+    message = fields.Text('Message', states={'readonly': Bool(Eval('readonly'))}, depends=['readonly'])
 
     @classmethod
     def __setup__(cls):
-        super(CondoPaymentGroup, cls).__setup__()
+        super(Group, cls).__setup__()
         t = cls.__table__()
-        cls._buttons.update({
-                'generate_fees': {
-                    'invisible': Bool(Eval('readonly'))},
-                })
+        cls._buttons.update({'generate_fees': {'invisible': Bool(Eval('readonly')), 'icon': 'tryton-launch'}})
 
     @dualmethod
     @ModelView.button
@@ -58,11 +51,15 @@ class CondoPaymentGroup(metaclass=PoolMeta):
         CondoPayments = pool.get('condo.payment')
 
         for group in groups:
-            condoparties = CondoParties.search([('unit.company', '=', group.company),
-                ('sepa_mandate', '!=', None),
-                ('sepa_mandate.state', 'not in', ['draft', 'canceled']),
-                ('sepa_mandate.account_number', '!=', None),
-                ], order=[('unit.name', 'ASC'),])
+            condoparties = CondoParties.search(
+                [
+                    ('unit.company', '=', group.company),
+                    ('mandate', '!=', None),
+                    ('mandate.state', 'not in', ['draft', 'canceled']),
+                    ('mandate.account_number', '!=', None),
+                ],
+                order=[('unit.name', 'ASC')],
+            )
 
             if group.message:
                 f = StringIO(group.message)
@@ -70,43 +67,52 @@ class CondoPaymentGroup(metaclass=PoolMeta):
                 information = list(map(tuple, r))
                 f.close()
 
-            #delete payments of this group with state='draft'
-            CondoPayments.delete([p for p in group.payments if p.state=='draft'])
+            # delete payments of this group with state='draft'
+            CondoPayments.delete([p for p in group.payments if p.state == 'draft'])
 
             for condoparty in condoparties:
-                if CondoPayments.search_count([
-                               ('group', '=', group),
-                               ('unit', '=', condoparty.unit),
-                               ('party', '=', condoparty.party)])==0:
+                if (
+                    CondoPayments.search_count(
+                        [('group', '=', group), ('unit', '=', condoparty.unit), ('party', '=', condoparty.party)]
+                    )
+                    == 0
+                ):
                     condopayment = CondoPayments(
-                                      group = group,
-                                      unit = condoparty.unit,
-                                      #Set the condoparty as the party
-                                      #(instead the debtor of the mandate condoparty.sepa_mandate.party)
-                                      party = condoparty.party,
-                                      currency = group.company.currency,
-                                      sepa_mandate = condoparty.sepa_mandate,
-                                      type = condoparty.sepa_mandate.type,
-                                      date = group.date,
-                                      sepa_end_to_end_id = condoparty.unit.name)
-                    #Read rest fields from message file
+                        group=group,
+                        unit=condoparty.unit,
+                        # Set the condoparty as the party
+                        # (instead the debtor of the mandate condoparty.mandate.party)
+                        party=condoparty.party,
+                        currency=group.company.currency,
+                        mandate=condoparty.mandate,
+                        type=condoparty.mandate.type,
+                        date=group.date,
+                        sepa_end_to_end_id=condoparty.unit.name,
+                    )
+                    # Read rest fields from message file
                     if group.message and len(information):
-                        concepts = [x for x in information if x[0]==condoparty.unit.name]
+                        concepts = [x for x in information if (len(x) and x[0] == condoparty.unit.name)]
                         for concept in concepts:
-                            if ((len(concept)==4 and (condoparty.role==concept[3] if bool(concept[3]) else not bool(condoparty.role)))
-                                or (len(concept)==3 and len(concepts)==1)):
-                                    try:
-                                        condopayment.amount = Decimal(concept[1].replace(",", "."))
-                                        condopayment.description = concept[2]
-                                    except DecimalException:
-                                        cls.raise_user_error('Amount of fee for unit "%s" is invalid!',
-                                                              condoparty.unit.name)
+                            if (
+                                len(concept) == 4
+                                and (condoparty.role == concept[3] if bool(concept[3]) else not bool(condoparty.role))
+                            ) or (len(concept) == 3 and len(concepts) == 1):
+                                try:
+                                    condopayment.amount = Decimal(concept[1].replace(",", "."))
+                                    condopayment.description = concept[2]
+                                except DecimalException:
+                                    cls.raise_user_error(
+                                        'Amount of fee for unit "%s" is invalid!', condoparty.unit.name
+                                    )
 
-                                    if condopayment.amount<=0:
-                                        cls.raise_user_warning('warn_invalid_amount.%d.%d' % (group.id, condoparty.id),
-                                            'Amount of fee for unit "%s" must be bigger than zero!', condoparty.unit.name)
+                                if condopayment.amount <= 0:
+                                    cls.raise_user_warning(
+                                        'warn_invalid_amount.%d.%d' % (group.id, condoparty.id),
+                                        'Amount of fee for unit "%s" must be bigger than zero!',
+                                        condoparty.unit.name,
+                                    )
 
-                                    #Consider only condopayments included in group.message
-                                    group.payments += (condopayment,)
+                                # Consider only condopayments included in group.message
+                                group.payments += (condopayment,)
         if _save:
             cls.save(groups)

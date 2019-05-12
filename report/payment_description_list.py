@@ -47,36 +47,29 @@ class PaymentDescriptionList(Report):
         preport = []
 
         for r in records:
-            companies = Company.search_read([
-                        'OR', [
-                                ('id', '=', r.company.id),
-                            ],[
-                                ('parent', 'child_of', r.company.id),
-                            ],
-                    ], order=[('party.name', 'ASC')],
-                    fields_names=['id', 'party.name'])
+            companies = Company.search_read(
+                ['OR', [('id', '=', r.company.id)], [('parent', 'child_of', r.company.id)]],
+                order=[('party.name', 'ASC')],
+                fields_names=['id', 'party.name'],
+            )
 
             report = []
 
             for c in companies:
-                cursor.execute(*table1.join(table2,
-                                    condition=table1.unit == table2.id).select(
-                                        table2.name, table1.role,
-                                        where=((table1.sepa_mandate != None) &
-                                              (table2.company == c['id'])),
-                                        order_by=(Asc(table2.name), Asc(table1.role))))
-                item = {
-                    'company':   c['party.name'],
-                    'units':     list(cursor_dict(cursor, size=None))
-                    }
+                cursor.execute(
+                    *table1.join(table2, condition=table1.unit == table2.id).select(
+                        table2.name,
+                        table1.role,
+                        where=((table1.mandate != None) & (table2.company == c['id'])),
+                        order_by=(Asc(table2.name), Asc(table1.role)),
+                    )
+                )
+                item = {'company': c['party.name'], 'units': list(cursor_dict(cursor, size=None))}
                 if len(item['units']):
                     report.append(item)
 
             if len(report):
-                item = {
-                    'reference': r.reference,
-                    'condo': report
-                    }
+                item = {'reference': r.reference, 'condo': report}
                 preport.append(item)
 
         report_context['pgroups'] = preport
