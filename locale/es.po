@@ -19,7 +19,7 @@ msgstr "Generar Recibos"
 
 msgctxt "model:ir.action,name:payment_description_list"
 msgid "PaymentGroup Concepts List"
-msgstr "Planilla de Conceptos"
+msgstr "Plantilla de Conceptos"
 
 
 msgctxt "error:condo.payment.group:"
