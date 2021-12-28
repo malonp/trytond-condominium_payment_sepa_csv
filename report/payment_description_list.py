@@ -19,8 +19,7 @@
 #
 ##############################################################################
 
-from sql import Desc, Asc
-
+from sql import Asc, Desc
 from trytond.pool import Pool
 from trytond.report import Report
 from trytond.tools import cursor_dict

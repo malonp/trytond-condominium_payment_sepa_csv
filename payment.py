@@ -20,13 +20,12 @@
 ##############################################################################
 
 import csv
-from io import StringIO
 from decimal import Decimal, DecimalException
+from io import StringIO
 
-from trytond.pool import PoolMeta, Pool
-from trytond.model import ModelView, fields, dualmethod
-from trytond.pyson import Eval, Bool
-
+from trytond.model import ModelView, dualmethod, fields
+from trytond.pool import Pool, PoolMeta
+from trytond.pyson import Bool, Eval
 
 __all__ = ['Group']
 

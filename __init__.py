@@ -20,6 +20,7 @@
 ##############################################################################
 
 from trytond.pool import Pool
+
 from .payment import *
 from .report import *
 
