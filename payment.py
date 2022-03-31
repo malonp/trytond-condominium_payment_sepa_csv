@@ -38,7 +38,6 @@ class Group(metaclass=PoolMeta):
     @classmethod
     def __setup__(cls):
         super(Group, cls).__setup__()
-        t = cls.__table__()
         cls._buttons.update({'generate_fees': {'invisible': Bool(Eval('readonly')), 'icon': 'tryton-launch'}})
 
     @dualmethod
